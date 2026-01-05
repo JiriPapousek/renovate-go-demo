@@ -1,0 +1,19 @@
+{
+  "$schema": "https://docs.renovatebot.com/renovate-schema.json",
+  "extends": [
+    "config:recommended"
+  ],
+  "packageRules": [
+    {
+      "description": "Enable Go version updates in go.mod",
+      "matchDatasources": ["golang-version"],
+      "rangeStrategy": "bump"
+    },
+    {
+      "description": "Group all Go-related updates together and wait for CI to pass",
+      "matchPackageNames": ["go", "golang"],
+      "groupName": "Go",
+      "prCreation": "status-success"
+    }
+  ]
+}
