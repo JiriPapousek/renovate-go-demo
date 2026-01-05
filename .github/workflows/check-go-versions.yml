@@ -2,9 +2,7 @@ name: Check Go Version Consistency
 
 on:
   pull_request:
-    branches: [ main, master ]
   push:
-    branches: [ main, master ]
 
 jobs:
   check-versions:
