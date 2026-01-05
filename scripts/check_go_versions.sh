@@ -13,16 +13,27 @@ echo "INFO: go.mod: $GO_MOD_VERSION"
 DOCKER_VERSION=$(grep 'FROM golang:' Dockerfile | head -n 1 | sed -E 's/.*golang:([0-9]+\.[0-9]+).*/\1/')
 echo "INFO: Dockerfile: $DOCKER_VERSION"
 
-# Compare versions
-if [ "$GO_MOD_VERSION" != "$DOCKER_VERSION" ]; then
+# Extract major.minor versions (e.g., 1.25 from 1.25.5)
+GO_MOD_MAJOR_MINOR=$(echo "$GO_MOD_VERSION" | cut -d. -f1,2)
+DOCKER_MAJOR_MINOR=$(echo "$DOCKER_VERSION" | cut -d. -f1,2)
+
+echo ""
+echo "Comparing major.minor versions:"
+echo "  go.mod:     $GO_MOD_MAJOR_MINOR (from $GO_MOD_VERSION)"
+echo "  Dockerfile: $DOCKER_MAJOR_MINOR (from $DOCKER_VERSION)"
+
+# Compare major.minor versions only
+if [ "$GO_MOD_MAJOR_MINOR" != "$DOCKER_MAJOR_MINOR" ]; then
     echo ""
     echo "ERROR: Go version mismatch detected!"
-    echo "  go.mod:     $GO_MOD_VERSION"
-    echo "  Dockerfile: $DOCKER_VERSION"
+    echo "  go.mod:     $GO_MOD_VERSION (major.minor: $GO_MOD_MAJOR_MINOR)"
+    echo "  Dockerfile: $DOCKER_VERSION (major.minor: $DOCKER_MAJOR_MINOR)"
     echo ""
-    echo "Please ensure all Go versions are synchronized across files."
+    echo "Please ensure Go major.minor versions are synchronized across files."
     exit 1
 fi
 
 echo ""
-echo "SUCCESS: All Go versions are in sync ($GO_MOD_VERSION)"
+echo "SUCCESS: Go major.minor versions are in sync ($GO_MOD_MAJOR_MINOR)"
+echo "  go.mod:     $GO_MOD_VERSION"
+echo "  Dockerfile: $DOCKER_VERSION"
