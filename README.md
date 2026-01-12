@@ -15,9 +15,9 @@ Renovate does not natively enforce that these versions must match.
 This demo implements a **CI-based validation approach**:
 
 1. **Group Go updates** - Renovate groups both `go` and `golang` updates into a single PR
-2. **Wait for CI** - Renovate only creates the PR after CI checks pass (`prCreation: "status-success"`)
-3. **CI validation** - GitHub Actions runs a script that fails if versions don't match
-4. **Automatic sync** - Renovate will only create a PR when all versions are synchronized
+2. **Create PR immediately** - Renovate creates the PR as soon as updates are detected
+3. **CI validation on PR** - GitHub Actions runs on the PR and validates that versions match
+4. **Prevent merging** - If versions don't match, the CI check fails and prevents merging (via branch protection or manual review)
 
 ## Repository Structure
 
@@ -47,10 +47,9 @@ renovate-go-demo/
       "rangeStrategy": "bump"
     },
     {
-      "description": "Group all Go-related updates together and wait for CI to pass",
+      "description": "Group all Go-related updates together",
       "matchPackageNames": ["go", "golang"],
-      "groupName": "Go",
-      "prCreation": "status-success"
+      "groupName": "Go"
     }
   ]
 }
@@ -59,7 +58,7 @@ renovate-go-demo/
 **Key settings:**
 - `rangeStrategy: "bump"` - Enables automatic Go version updates in go.mod
 - `matchPackageNames: ["go", "golang"]` - Groups both dependencies together
-- `prCreation: "status-success"` - Only creates PR after CI passes
+- `groupName: "Go"` - All Go-related updates are bundled into a single PR
 
 ### Version Check Script
 
@@ -98,9 +97,10 @@ When a new Go version (e.g., 1.23) is released:
 1. **Renovate detects updates** for both `go` in go.mod and `golang` Docker image
 2. **Creates a single branch** (due to `groupName: "Go"`)
 3. **Updates both files** in the branch
-4. **CI runs automatically** on the branch
-5. **If versions match:** CI passes and Renovate creates the PR
-6. **If versions don't match:** CI fails and Renovate keeps the branch but doesn't create PR
+4. **Creates a PR immediately**
+5. **CI runs automatically** on the PR
+6. **If versions match:** ✅ CI passes - PR can be merged
+7. **If versions don't match:** ❌ CI fails - PR cannot be merged (requires manual intervention or branch protection)
 
 ## References
 
