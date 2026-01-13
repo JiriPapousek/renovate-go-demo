@@ -1,27 +1,24 @@
 # Build stage
-FROM golang:1.21-alpine AS builder
+FROM registry.access.redhat.com/ubi9/go-toolset:1.24 AS builder
 
-WORKDIR /app
+COPY . .
 
-# Copy go mod files
-COPY go.mod ./
-
-# Download dependencies
-RUN go mod download
-
-# Copy source code
-COPY *.go ./
+USER 0
 
 # Build the application
-RUN CGO_ENABLED=0 GOOS=linux go build -o /app/server
+RUN go build -o /opt/app-root/src/server
 
 # Runtime stage
-FROM alpine:latest
-
-WORKDIR /root/
+FROM registry.access.redhat.com/ubi9/ubi-micro:latest
 
 # Copy the binary from builder
-COPY --from=builder /app/server .
+COPY --from=builder /opt/app-root/src/server .
+
+# copy the certificates from builder image
+COPY --from=builder /etc/ssl /etc/ssl
+COPY --from=builder /etc/pki /etc/pki
+
+USER 1001
 
 EXPOSE 8080
 
