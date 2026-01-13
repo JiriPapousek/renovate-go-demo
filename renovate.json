@@ -10,8 +10,21 @@
       "rangeStrategy": "bump"
     },
     {
-      "description": "Group all Go-related updates together",
-      "matchPackageNames": ["go", "golang"],
+      "description": "Group Go language version from go.mod",
+      "matchDatasources": ["golang-version"],
+      "matchDepNames": ["go"],
+      "groupName": "Go"
+    },
+    {
+      "description": "Group golang Docker image",
+      "matchDatasources": ["docker"],
+      "matchPackageNames": ["golang"],
+      "groupName": "Go"
+    },
+    {
+      "description": "Group Go version in GitHub Actions",
+      "matchManagers": ["github-actions"],
+      "matchDepNames": ["go"],
       "groupName": "Go"
     }
   ]
